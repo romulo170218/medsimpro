@@ -1,5 +1,5 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 
 st.set_page_config(page_title="MedSim Pro MVP", layout="wide")
 
@@ -40,8 +40,11 @@ def chamar_ia(msg, system_prompt):
     msgs = [{"role": "system", "content": system_prompt}]
     msgs += [{"role": m["role"], "content": m["text"]} for m in st.session_state.messages]
     msgs.append({"role": "user", "content": msg})
-    resp = openai.ChatCompletion.create(model="gpt-4o", messages=msgs)
-    return resp.choices[0].message.content
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=msgs
+    )
+    return response.choices[0].message.content
 
 # — Interface principal —
 st.title("🎓 MedSim Pro MVP")
