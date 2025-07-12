@@ -13,7 +13,7 @@ st.set_page_config(page_title="MedSim Pro MVP", layout="wide")
 
 # — Configuração da API —
 st.sidebar.header("Configuração")
-api_key = st.sidebar.text_input("Chave da OpenAI", type="password")
+api_key = st.sidebar.text_input("🔑 Sua chave OpenAI", type="password")
 if api_key:
     openai.api_key = api_key
 st.sidebar.write("Escolha o caso clínico:")
