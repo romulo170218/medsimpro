@@ -47,9 +47,9 @@ def chamar_ia(msg, system_prompt):
     msgs += [{"role": m["role"], "content": m["text"]} for m in st.session_state.messages]
     msgs.append({"role": "user", "content": msg})
     response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=msgs
-    )
+    model="gpt-3.5-turbo",
+    messages=msgs
+)
     return response.choices[0].message.content
 
 # Layout
