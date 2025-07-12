@@ -3,6 +3,14 @@ from openai import OpenAI
 
 st.set_page_config(page_title="MedSim Pro MVP", layout="wide")
 
+st.sidebar.header("Configuração")
+api_key = st.sidebar.text_input("Chave da OpenAI", type="password")
+
+if api_key:
+    client = OpenAI(api_key=api_key)  # ✅ novo cliente
+
+st.set_page_config(page_title="MedSim Pro MVP", layout="wide")
+
 # — Configuração da API —
 st.sidebar.header("Configuração")
 api_key = st.sidebar.text_input("Chave da OpenAI", type="password")
