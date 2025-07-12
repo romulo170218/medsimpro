@@ -3,23 +3,21 @@ from openai import OpenAI
 
 st.set_page_config(page_title="MedSim Pro MVP", layout="wide")
 
+# Barra lateral de configuração
 st.sidebar.header("Configuração")
-api_key = st.sidebar.text_input("Chave da OpenAI", type="password")
 
-if api_key:
-    client = OpenAI(api_key=api_key)  # ✅ novo cliente
-
-st.set_page_config(page_title="MedSim Pro MVP", layout="wide")
-
-# — Configuração da API —
-st.sidebar.header("Configuração")
+# Entrada da chave da OpenAI (corrigida)
 api_key = st.sidebar.text_input("🔑 Sua chave OpenAI", type="password")
+
+# Inicializa cliente da OpenAI somente se chave for informada
 if api_key:
-    openai.api_key = api_key
+    client = OpenAI(api_key=api_key)
+
+# Seleção de caso clínico
 st.sidebar.write("Escolha o caso clínico:")
 caso = st.sidebar.selectbox("", ["Úlcera por AINE (HDA leve)", "HDA grave com instabilidade"])
 
-# — Casos clínicos pré-definidos —
+# Casos clínicos simulados
 VL = {
     "Úlcera por AINE (HDA leve)": {
         "prompt_init": (
@@ -37,13 +35,13 @@ VL = {
     }
 }
 
-# — Chat e lógica de feedback —
+# Estado da conversa
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
 if "feedback" not in st.session_state:
     st.session_state.feedback = ""
 
+# Função para chamar a IA
 def chamar_ia(msg, system_prompt):
     msgs = [{"role": "system", "content": system_prompt}]
     msgs += [{"role": m["role"], "content": m["text"]} for m in st.session_state.messages]
@@ -54,7 +52,7 @@ def chamar_ia(msg, system_prompt):
     )
     return response.choices[0].message.content
 
-# — Interface principal —
+# Layout
 st.title("🎓 MedSim Pro MVP")
 col1, col2 = st.columns([2,1])
 
@@ -67,18 +65,18 @@ with col1:
         else:
             sys_promp = VL[caso]["prompt_init"]
             resposta = chamar_ia(user_input, sys_promp)
-            st.session_state.messages.append({"role":"assistant","text":resposta})
             st.session_state.messages.append({"role":"user","text":user_input})
-            # Feedback automático simplificado
+            st.session_state.messages.append({"role":"assistant","text":resposta})
+            # Avaliação simples automática
             fb = ""
             texto = user_input.lower()
-            if "omeprazol" in texto or "inibir bomba" in texto:
+            if "omeprazol" in texto or "inibidor" in texto:
                 fb += "✓ Indicou omeprazol (boa conduta).\n"
-            if "endoscopia" in texto or "ultrassom" in texto or "eda" in texto:
-                fb += "✓ Solicitou exame apropriado.\n"
-            if not fb:
-                fb = "📌 Consulte exames ou conduta apropriada."
-            st.session_state.feedback = fb
+            if "endoscopia" in texto or "eda" in texto:
+                fb += "✓ Solicitou endoscopia (EDA).\n"
+            if "ringer" in texto or "reposição" in texto:
+                fb += "✓ Iniciou reposição volêmica.\n"
+            st.session_state.feedback = fb or "📌 Tente incluir exame ou conduta apropriada."
 
 with col2:
     st.header("Respostas do paciente")
